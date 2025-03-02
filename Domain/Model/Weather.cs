@@ -1,12 +1,7 @@
 ﻿namespace Domain.Model
 {
-    public class Weather
+    public class Weather : Entity
     {
-        /// <summary>
-        /// Уникальный идентификатор записи
-        /// </summary>
-        public int Id { get; set; }
-
         /// <summary>
         /// Дата наблюдения
         /// </summary>

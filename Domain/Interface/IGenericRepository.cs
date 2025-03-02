@@ -1,6 +1,8 @@
-﻿namespace Domain.Interface
+﻿using Domain.Model;
+
+namespace Domain.Interface
 {
-    public interface IGenericRepository<T> where T : class
+    public interface IGenericRepository<T> where T : Entity
     {
         IQueryable<T> Entities { get; }
 
