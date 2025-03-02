@@ -1,0 +1,88 @@
+﻿@using Domain.Model
+@using System.Globalization
+
+@model List<Weather>
+
+@{
+    ViewData["Title"] = "Архив погоды";
+
+    var monthNames = DateTimeFormatInfo.CurrentInfo.MonthNames
+            .Take(12) 
+            .ToArray();
+
+    // Получаем текущий год и месяц
+    var currentDate = DateTime.Now;
+    var currentYear = currentDate.Year;
+    var currentMonth = currentDate.Month;
+
+    // Получаем значения из запроса, если они есть
+    var selectedYear = Context.Request.Query["year"].FirstOrDefault();
+    var selectedMonth = Context.Request.Query["month"].FirstOrDefault();
+
+    // Устанавливаем значения по умолчанию, если параметры не заданы
+    int? year = string.IsNullOrEmpty(selectedYear) ? (int?)null : int.Parse(selectedYear);
+    int? month = string.IsNullOrEmpty(selectedMonth) ? (int?)null : int.Parse(selectedMonth);
+}
+
+<h1>Архив погоды</h1>
+
+@if (ViewBag.ErrorMessage != null)
+{
+    <div class="alert alert-danger">
+        @ViewBag.ErrorMessage
+    </div>
+}
+
+<form method="get" asp-action="Index">
+    <label for="year">Год:</label>
+    <input type="number" id="year" name="year" value="@(year?.ToString() ?? "")" placeholder="Год" />
+
+    <label for="month">Месяц:</label>
+    <select id="month" name="month">
+        <option value="">Выберите месяц</option>
+        @for (int i = 0; i < monthNames.Length; i++)
+        {
+            <option value="@(i + 1)" selected="@(month == i + 1)">@monthNames[i]</option>
+        }
+    </select>
+
+    <button type="submit">Фильтровать</button>
+</form>
+
+<table class="table">
+    <thead>
+        <tr>
+            <th>Дата</th>
+            <th>Время</th>
+            <th>Температура (°C)</th>
+            <th>Влажность (%)</th>
+            <th>Точка росы (°C)</th>
+            <th>Давление (мм рт.ст.)</th>
+            <th>Направление ветра</th>
+            <th>Скорость ветра (м/с)</th>
+            <th>Облачность (%)</th>
+            <th>Нижняя граница облачности (м)</th>
+            <th>Видимость (км)</th>
+            <th>Погодные явления</th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var item in Model)
+        {
+            <tr>
+                <td>@item.Date.ToShortDateString()</td>
+                <td>@item.Time.ToString(@"hh\:mm")</td>
+                <td>@item.Temperature</td>
+                <td>@item.Humidity</td>
+                <td>@item.DewPoint</td>
+                <td>@item.Pressure</td>
+                <td>@item.WindDirection</td>
+                <td>@item.WindSpeed</td>
+                <td>@item.Cloudiness</td>
+                <td>@item.CloudBaseHeight</td>
+                <td>@item.HorizontalVisibility</td>
+                <td>@item.WeatherPhenomena</td>
+            </tr>
+        }
+    </tbody>
+</table>
