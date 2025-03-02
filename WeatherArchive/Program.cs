@@ -1,3 +1,10 @@
+using Application.Service;
+using Domain.Interface;
+using Domain.Model;
+using Microsoft.EntityFrameworkCore;
+using Persistence.Context;
+using Persistence.Repository;
+
 namespace WeatherArchive
 {
     public class Program
@@ -8,6 +15,17 @@ namespace WeatherArchive
 
             // Add services to the container.
             builder.Services.AddControllersWithViews();
+
+            // Регистрация контекста базы данных
+            builder.Services.AddDbContext<ApplicationContext>(options =>
+                options.UseNpgsql(builder.Configuration.GetConnectionString("WeatherContext")?.Replace("{CCTV_DB_PASSWORD}", Environment.GetEnvironmentVariable("CCTV_DB_PASSWORD"))
+                    ?? throw new InvalidOperationException("Connection string 'WeatherContext' not found.")));
+
+            // Регистрация бизнес-логики
+            builder.Services.AddScoped<WeatherService>();
+
+            // Регистрация репозиториев
+            builder.Services.AddScoped<IGenericRepository<Weather>, GenericRepository<Weather>>();
 
             var app = builder.Build();
 
