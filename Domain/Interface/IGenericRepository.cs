@@ -9,6 +9,7 @@ namespace Domain.Interface
         Task<T?> GetByIdAsync(int id);
         Task<List<T>> GetAllAsync();
         Task<T> AddAsync(T entity);
+        Task AddRangeAsync(IEnumerable<T> entities);
         Task UpdateAsync(T entity);
         Task DeleteAsync(T entity);
         Task SaveAsync();

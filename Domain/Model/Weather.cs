@@ -50,8 +50,8 @@ namespace Domain.Model
         /// <summary>
         /// Скорость ветра (в м/с)
         /// </summary>
-        [Column("wind_speed", TypeName = "decimal(4,1)")]
-        public decimal? WindSpeed { get; set; }
+        [Column("wind_speed", TypeName = "smallint")]
+        public short? WindSpeed { get; set; }
 
         /// <summary>
         /// Облачность (в %)

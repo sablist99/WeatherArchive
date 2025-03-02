@@ -1,0 +1,60 @@
+﻿@{
+    ViewData["Title"] = "Загрузка Excel-файлов";
+}
+
+<div class="container mt-5">
+    <div class="row justify-content-center">
+        <div class="col-md-8">
+            <div class="card shadow">
+                <div class="card-header bg-primary text-white">
+                    <h3 class="card-title mb-0">Загрузка Excel-файлов</h3>
+                </div>
+                <div class="card-body">
+                    @if (ViewBag.SuccessMessage != null)
+                    {
+                        <div class="alert alert-success alert-dismissible fade show" role="alert">
+                            @ViewBag.SuccessMessage
+                            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                        </div>
+                    }
+
+                    @if (ViewBag.ErrorMessage != null)
+                    {
+                        <div class="alert alert-danger alert-dismissible fade show" role="alert">
+                            @ViewBag.ErrorMessage
+                            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                        </div>
+                    }
+
+                    <form method="post" enctype="multipart/form-data" asp-action="UploadFiles" class="needs-validation" novalidate>
+                        <div class="mb-3">
+                            <label for="files" class="form-label">Выберите Excel-файлы:</label>
+                            <input type="file" class="form-control" id="files" name="files" multiple accept=".xlsx, .xls" required />
+                            <div class="invalid-feedback">Пожалуйста, выберите хотя бы один файл.</div>
+                        </div>
+                        <button type="submit" class="btn btn-primary w-100">Загрузить и обработать</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script>
+        (() => {
+            'use strict'
+
+            const form = document.querySelector('.needs-validation')
+
+            form.addEventListener('submit', event => {
+                if (!form.checkValidity()) {
+                    event.preventDefault()
+                    event.stopPropagation()
+                }
+
+                form.classList.add('was-validated')
+            }, false)
+        })()
+    </script>
+}

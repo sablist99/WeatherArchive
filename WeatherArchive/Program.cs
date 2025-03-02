@@ -1,6 +1,7 @@
 using Application.Service;
 using Domain.Interface;
 using Domain.Model;
+using Infrastructure.Import;
 using Microsoft.EntityFrameworkCore;
 using Persistence.Context;
 using Persistence.Repository;
@@ -23,9 +24,11 @@ namespace WeatherArchive
 
             // Регистрация бизнес-логики
             builder.Services.AddScoped<WeatherService>();
+            builder.Services.AddScoped<WeatherImportService>();
 
             // Регистрация репозиториев
             builder.Services.AddScoped<IGenericRepository<Weather>, GenericRepository<Weather>>();
+            builder.Services.AddScoped<IWeatherImportParser, WeatherImportParserNpoi>();
 
             var app = builder.Build();
 

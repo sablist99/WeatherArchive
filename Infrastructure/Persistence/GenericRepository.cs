@@ -29,6 +29,23 @@ namespace Persistence.Repository
             }
         }
 
+        public async Task AddRangeAsync(IEnumerable<T> entities)
+        {
+            try
+            {
+                await DbContext.Set<T>().AddRangeAsync(entities);
+                await SaveAsync();
+            }
+            catch (DbUpdateException ex)
+            {
+                throw new Exception(ex.InnerException?.Message ?? "Ошибка обновления базы данных.");
+            }
+            catch (Exception ex)
+            {
+                throw new Exception($"Ошибка при добавлении записи: {ex.Message}");
+            }
+        }
+
         public async Task UpdateAsync(T entity)
         {
             try
