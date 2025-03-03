@@ -1,8 +1,15 @@
 ﻿@{
-    ViewData["Title"] = "Home Page";
+    ViewData["Title"] = "Главная страница";
 }
 
 <div class="text-center">
-    <h1 class="display-4">Welcome</h1>
-    <p>Learn about <a href="https://learn.microsoft.com/aspnet/core">building Web apps with ASP.NET Core</a>.</p>
+    <p>Выберите действие:</p>
+
+    <a href="@Url.Action("Index", "Weather")" class="btn btn-success m-2">
+       Просмотр данных
+    </a>
+
+    <a href="@Url.Action("UploadFiles", "WeatherImport")" class="btn btn-primary m-2">
+        Импорт данных
+    </a>
 </div>
