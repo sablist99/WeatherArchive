@@ -5,7 +5,7 @@ namespace Application.Service
 {
     public class WeatherService(IGenericRepository<Weather> repository) : GenericService<Weather>(repository)
     {
-        public async Task<List<Weather>> GetWeatherDataAsync(int? year = null, int? month = null)
+        public async Task<(List<Weather>, int TotalCount)> GetWeatherDataAsync(int? year = null, int? month = null, int pageNumber = 1, int pageSize = 100)
         {
             if (year.HasValue && (year < 1900 || year > DateTime.Now.Year))
             {
@@ -29,7 +29,15 @@ namespace Application.Service
                 data = data.Where(w => w.Date.Month == month.Value);
             }
 
-            return data.ToList();
+            int totalCount = data.Count();
+
+            var pagedData = data
+                .OrderBy(w => w.Date)
+                .Skip((pageNumber - 1) * pageSize)
+                .Take(pageSize)
+                .ToList();
+
+            return (pagedData, totalCount);
         }
     }
 }

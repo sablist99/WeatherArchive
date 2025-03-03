@@ -18,17 +18,19 @@
     // Получаем значения из запроса, если они есть
     var selectedYear = Context.Request.Query["year"].FirstOrDefault();
     var selectedMonth = Context.Request.Query["month"].FirstOrDefault();
+    var selectedPageSize = Context.Request.Query["pageSize"].FirstOrDefault();
 
     // Устанавливаем значения по умолчанию, если параметры не заданы
     int? year = string.IsNullOrEmpty(selectedYear) ? (int?)null : int.Parse(selectedYear);
     int? month = string.IsNullOrEmpty(selectedMonth) ? (int?)null : int.Parse(selectedMonth);
+    int pageSize = string.IsNullOrEmpty(selectedPageSize) ? 100 : int.Parse(selectedPageSize);
 }
 
 <div class="container mt-5">
     <div class="row justify-content-center">
         <div class="col-md-8">
             <div class="card shadow">
-                <div class="card-header bg-success text-white">
+                <div class="card-header bg-primary text-white">
                     <h3 class="card-title mb-0">Архив погоды</h3>
                 </div>
                 <div class="card-body">
@@ -42,19 +44,22 @@
                     <form method="get" asp-action="Index">
                         <div class="mb-3">
                             <label for="year">Год:</label>
-                            <input type="number" id="year" name="year" value="@(year?.ToString() ?? "")" placeholder="Год" />
+                            <input type="number" class="form-control w-100" id="year" name="year" value="@(year?.ToString() ?? "")" placeholder="Год" />
 
-                            <label for="month">Месяц:</label>
-                            <select id="month" name="month">
+                            <label for="month" class="mt-1">Месяц:</label>
+                            <select class="form-control w-100" id="month" name="month">
                                 <option value="">Выберите месяц</option>
                                 @for (int i = 0; i < monthNames.Length; i++)
                                 {
                                     <option value="@(i + 1)" selected="@(month == i + 1)">@monthNames[i]</option>
                                 }
                             </select>
+
+                            <label for="pageSize" class="mt-1">Записей на странице:</label>
+                            <input type="number" class="form-control w-100" id="pageSize" name="pageSize" value="@(pageSize.ToString() ?? "")" placeholder="Записей на странице" />
                         </div>
 
-                        <button type="submit" class="btn btn-success w-100">Фильтровать</button>
+                        <button type="submit" class="btn btn-primary w-100">Поиск</button>
                     </form>
                 </div>
             </div>
@@ -99,3 +104,92 @@
         }
     </tbody>
 </table>
+
+@{
+    int totalPages = (int)Math.Ceiling((double)ViewBag.TotalCount / ViewBag.PageSize);
+    int currentPage = ViewBag.PageNumber;
+    int maxHalfDisplayedPages = 2; // Количество отображаемых кнопок по бокам от текущей
+}
+
+@if (totalPages > 1)
+{
+    <nav>
+        <ul class="pagination">
+            @*
+        Кнопка назад
+        Отключена, если находимся на первой странице
+        *@
+            <li class="page-item @(currentPage == 1 ? "disabled" : "")">
+                <a class="page-link" asp-action="Index"
+                   asp-route-year="@Context.Request.Query["year"]"
+                   asp-route-month="@Context.Request.Query["month"]"
+                   asp-route-pageNumber="@(currentPage - 1)"
+                   asp-route-pageSize="@ViewBag.PageSize">«</a>
+            </li>
+
+            @*
+        Статичная кнопка первой страницы
+        *@
+            <li class="page-item @(currentPage == 1 ? "active" : "")">
+                <a class="page-link" asp-action="Index"
+                   asp-route-year="@Context.Request.Query["year"]"
+                   asp-route-month="@Context.Request.Query["month"]"
+                   asp-route-pageNumber="1"
+                   asp-route-pageSize="@ViewBag.PageSize">1</a>
+            </li>
+
+            @*
+        Символ пропуска страниц
+        Отображается, когда номер минимальной страницы, отображаемой в середине, больше второго номера
+        *@
+            @if (currentPage - maxHalfDisplayedPages > 2)
+            {
+                <li class="page-item disabled"><span class="page-link">...</span></li>
+            }
+
+            @* Заполнение кнопок "несколько до" + "текущая страница" + "несколько после" *@
+            @for (int i = Math.Max(2, currentPage - maxHalfDisplayedPages); i <= Math.Min(totalPages - 1, currentPage + maxHalfDisplayedPages); i++)
+            {
+                <li class="page-item @(currentPage == i ? "active" : "")">
+                    <a class="page-link" asp-action="Index"
+                       asp-route-year="@Context.Request.Query["year"]"
+                       asp-route-month="@Context.Request.Query["month"]"
+                       asp-route-pageNumber="@i"
+                       asp-route-pageSize="@ViewBag.PageSize">@i</a>
+                </li>
+            }
+
+            @*
+        Символ пропуска страниц
+        Отображается, когда номер максимальной страницы, отображаемой в середине, меньше предпоследнего номера
+        *@
+            @if (currentPage + maxHalfDisplayedPages < totalPages - 1)
+            {
+                <li class="page-item disabled"><span class="page-link">...</span></li>
+            }
+
+            @*
+        Статичная кнопка последней страницы
+        *@
+            <li class="page-item @(currentPage == totalPages ? "active" : "")">
+                <a class="page-link" asp-action="Index"
+                   asp-route-year="@Context.Request.Query["year"]"
+                   asp-route-month="@Context.Request.Query["month"]"
+                   asp-route-pageNumber="@totalPages"
+                   asp-route-pageSize="@ViewBag.PageSize">@totalPages</a>
+            </li>
+
+            @*
+        Кнопка вперед
+        Отключена, если находимся на последней странице
+        *@
+            <li class="page-item @(currentPage == totalPages ? "disabled" : "")">
+                <a class="page-link" asp-action="Index"
+                   asp-route-year="@Context.Request.Query["year"]"
+                   asp-route-month="@Context.Request.Query["month"]"
+                   asp-route-pageNumber="@(currentPage + 1)"
+                   asp-route-pageSize="@ViewBag.PageSize">»</a>
+            </li>
+        </ul>
+    </nav>
+}
