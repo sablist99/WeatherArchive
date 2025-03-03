@@ -12,7 +12,7 @@
                 <div class="card-body">
                     @if (ViewBag.SuccessMessage != null)
                     {
-                        <div class="alert alert-success alert-dismissible fade show" role="alert">
+                        <div class="alert alert-success alert-dismissible" role="alert">
                             @ViewBag.SuccessMessage
                             <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
                         </div>
@@ -20,7 +20,7 @@
 
                     @if (ViewBag.ErrorMessage != null)
                     {
-                        <div class="alert alert-danger alert-dismissible fade show" role="alert">
+                        <div class="alert alert-danger alert-dismissible" role="alert">
                             @ViewBag.ErrorMessage
                             <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
                         </div>

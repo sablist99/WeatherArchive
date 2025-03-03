@@ -7,7 +7,7 @@
     ViewData["Title"] = "Архив погоды";
 
     var monthNames = DateTimeFormatInfo.CurrentInfo.MonthNames
-            .Take(12) 
+            .Take(12)
             .ToArray();
 
     // Получаем текущий год и месяц
@@ -24,30 +24,43 @@
     int? month = string.IsNullOrEmpty(selectedMonth) ? (int?)null : int.Parse(selectedMonth);
 }
 
-<h1>Архив погоды</h1>
+<div class="container mt-5">
+    <div class="row justify-content-center">
+        <div class="col-md-8">
+            <div class="card shadow">
+                <div class="card-header bg-success text-white">
+                    <h3 class="card-title mb-0">Архив погоды</h3>
+                </div>
+                <div class="card-body">
+                    @if (ViewBag.ErrorMessage != null)
+                    {
+                        <div class="alert alert-danger">
+                            @ViewBag.ErrorMessage
+                        </div>
+                    }
 
-@if (ViewBag.ErrorMessage != null)
-{
-    <div class="alert alert-danger">
-        @ViewBag.ErrorMessage
+                    <form method="get" asp-action="Index">
+                        <div class="mb-3">
+                            <label for="year">Год:</label>
+                            <input type="number" id="year" name="year" value="@(year?.ToString() ?? "")" placeholder="Год" />
+
+                            <label for="month">Месяц:</label>
+                            <select id="month" name="month">
+                                <option value="">Выберите месяц</option>
+                                @for (int i = 0; i < monthNames.Length; i++)
+                                {
+                                    <option value="@(i + 1)" selected="@(month == i + 1)">@monthNames[i]</option>
+                                }
+                            </select>
+                        </div>
+
+                        <button type="submit" class="btn btn-success w-100">Фильтровать</button>
+                    </form>
+                </div>
+            </div>
+        </div>
     </div>
-}
-
-<form method="get" asp-action="Index">
-    <label for="year">Год:</label>
-    <input type="number" id="year" name="year" value="@(year?.ToString() ?? "")" placeholder="Год" />
-
-    <label for="month">Месяц:</label>
-    <select id="month" name="month">
-        <option value="">Выберите месяц</option>
-        @for (int i = 0; i < monthNames.Length; i++)
-        {
-            <option value="@(i + 1)" selected="@(month == i + 1)">@monthNames[i]</option>
-        }
-    </select>
-
-    <button type="submit">Фильтровать</button>
-</form>
+</div>
 
 <table class="table">
     <thead>
